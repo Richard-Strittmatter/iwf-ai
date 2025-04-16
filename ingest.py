@@ -1,22 +1,26 @@
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 import os
 
-# Alle Textdateien im data-Ordner laden
+ALLOWED_EXTENSIONS = (".md", ".txt", ".php", ".js", ".jsx", ".ts", ".tsx", ".yaml", ".yml", ".json", ".xml", ".pdf")
+
 docs = []
 data_dir = "data"
-for filename in os.listdir(data_dir):
-    if filename.endswith(".md") or filename.endswith(".txt"):
-        loader = TextLoader(os.path.join(data_dir, filename))
-        docs.extend(loader.load())
+for root, dirs, files in os.walk(data_dir):
+    for filename in files:
+        path = os.path.join(root, filename)
+        if filename.endswith(".pdf"):
+            loader = PyPDFLoader(path)
+            docs.extend(loader.load())
+        elif filename.endswith(ALLOWED_EXTENSIONS):
+            loader = TextLoader(path)
+            docs.extend(loader.load())
 
-# In kleinere Chunks splitten (bessere Suche)
-splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+splitter = RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=80)
 docs = splitter.split_documents(docs)
 
-# Chroma-Datenbank erstellen und Daten speichern (lokale Embeddings!)
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 db = Chroma.from_documents(
     docs,
