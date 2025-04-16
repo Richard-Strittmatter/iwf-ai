@@ -1,12 +1,17 @@
 import gradio as gr
 import requests
 
-WEBHOOK_URL = "http://localhost:5678/webhook/rag/query"
-# WEBHOOK_URL = "http://localhost:5678/webhook-test/rag/query"
+#Prod URL
+# WEBHOOK_URL = "http://localhost:5678/webhook/rag/query"
+
+#Test URL
+WEBHOOK_URL = "http://localhost:5678/webhook-test/rag/query"
 
 def chat_fn(message, history):
-    # Sende die Frage an den n8n-Webhook
-    payload = {"question": message}
+    payload = {
+        "question": message,
+        "history": history or []
+    }
     try:
         response = requests.post(WEBHOOK_URL, json=payload, timeout=30)
         response.raise_for_status()
@@ -19,7 +24,7 @@ def chat_fn(message, history):
     return "", history
 
 with gr.Blocks() as demo:
-    gr.Markdown("# 💬 RAG Chatbot (n8n + Python)")
+    gr.Markdown("IWF AI (Ultra Smart)")
     chatbot = gr.Chatbot()
     msg = gr.Textbox(placeholder="Deine Frage eingeben und Enter drücken...")
     clear = gr.Button("Chat leeren")
