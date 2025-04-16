@@ -1,0 +1,141 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "command": "=/Users/{DeinName}}/repositories/iwf-ai/.venv/bin/python /Users/{DeinName}}/repositories/iwf-ai/query.py {{$json[\"body\"][\"question\"]}}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        2600,
+        860
+      ],
+      "id": "c7560d0c-ba40-4d77-aac4-f27fbfdd2137",
+      "name": "Execute Command",
+      "alwaysOutputData": false,
+      "notesInFlow": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        3360,
+        800
+      ],
+      "id": "c5505c3e-f038-4cff-a051-a080b1f3118b",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "rag/query",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        2300,
+        800
+      ],
+      "id": "e636783a-7d4f-4ab5-b2d3-1ec1f2074242",
+      "name": "Webhook",
+      "webhookId": "8b0b1b61-41ba-4b2e-8cf0-31bff4d1999b"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Du bist ein professioneller Senior Software Engineer und kannst mir bei der folgenden Frage helfen. Mach dir Gedanken zur Frage und analysieren den Kontext.\n\n{{ $json.stdout }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        2920,
+        680
+      ],
+      "id": "604286e7-019a-462b-bcb3-d55585225327",
+      "name": "Basic LLM Chain",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-3-7-sonnet-20250219",
+          "mode": "list",
+          "cachedResultName": "Claude 3.7 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        2840,
+        960
+      ],
+      "id": "4467f5ad-1ae0-4b28-a90f-4f8158297133",
+      "name": "Anthropic Chat Model2",
+      "credentials": {
+        "anthropicApi": {
+          "id": "YSmuWItSYo5enFeA",
+          "name": "Anthropic account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4c270b40b2538f5846790a70167556c20850d940e9f1c320d029cda98c26a881"
+  }
+}
