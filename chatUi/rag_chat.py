@@ -2,10 +2,10 @@ import gradio as gr
 import requests
 
 #Prod URL
-# WEBHOOK_URL = "http://localhost:5678/webhook/rag/query"
+WEBHOOK_URL = "http://localhost:5678/webhook/rag/query"
 
 #Test URL
-WEBHOOK_URL = "http://localhost:5678/webhook-test/rag/query"
+# WEBHOOK_URL = "http://localhost:5678/webhook-test/rag/query"
 
 def chat_fn(message, history):
     payload = {
@@ -24,7 +24,7 @@ def chat_fn(message, history):
     return "", history
 
 with gr.Blocks() as demo:
-    gr.Markdown("IWF AI (Ultra Smart)")
+    gr.Markdown("# IWF AI (Ultra Smart)")
     chatbot = gr.Chatbot()
     msg = gr.Textbox(placeholder="Deine Frage eingeben und Enter drücken...")
     clear = gr.Button("Chat leeren")

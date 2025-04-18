@@ -3,7 +3,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 import os
 
-def get_context(query, k=10):
+def get_context(query, k=15):
     db_path = "/Users/richardstrittmatter/repositories/iwf-ai/chroma_db"
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     db = Chroma(persist_directory=db_path, embedding_function=embeddings)
